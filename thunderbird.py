@@ -12,7 +12,7 @@ s = "select fts3_tokenizer('mozporter',X'"+ row[0]+"')"
 print s
 cur.execute(s)
 cur.fetchone()
-#cur.execute("select * from messagesText where messagesText MATCH 'monali'")
+#cur.execute("select * from messagesText where messagesText MATCH 'python'")
 cur.execute(input)
 for row in cur:
     print row
