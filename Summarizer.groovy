@@ -88,7 +88,7 @@ try {
 readLines = data.split("[.]|[?]|[!]")
 
 
-Set stopWords = new HashSet(Arrays.asList(StopWords.stopWords.split('\n')))
+Set stopWords = new HashSet(Arrays.asList(new File('/home/subh/stopwords.txt').text.split('\n')))
 
 
 sentences = []
@@ -161,14 +161,18 @@ values.reverse().subList(0, (int) (map.size() * 0.2) + 1).each { it ->
 }
 
 sb = new StringBuilder()
+int i = 1
 stmts.each {
-    sb.append(it.trim()).append('\n')
+    sb.append(i).append('. ').append(it.trim()).append('.\n')
+    i++
 }
 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 JFrame frame = new JFrame("Summary")
 JPanel panel = new JPanel(new BorderLayout())
 JTextArea textArea = new JTextArea(sb.toString(),20,100)
 textArea.setEditable(false)
+textArea.setLineWrap(true)
+
 textArea.setFont(textArea.getFont().deriveFont(18f));
 panel.add(new JScrollPane(textArea))
 frame.contentPane.add(panel,BorderLayout.CENTER)
