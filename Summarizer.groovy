@@ -6,6 +6,11 @@ import javax.swing.UIManager
 import java.awt.BorderLayout
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent
+import javax.swing.AbstractAction
+import javax.swing.JComponent
+import java.awt.event.KeyEvent
+import javax.swing.KeyStroke
 int getLevenshteinDistance(String s, String t) {
     // degenerate cases
     if (s == t) return 0;
@@ -88,7 +93,7 @@ try {
 readLines = data.split("[.]|[?]|[!]")
 
 
-Set stopWords = new HashSet(Arrays.asList(new File('/home/subh/stopwords.txt').text.split('\n')))
+Set stopWords = new HashSet(Arrays.asList(new File('D:/javaprojects/stopwords.txt').text.split('\r\n')))
 
 
 sentences = []
@@ -110,9 +115,10 @@ sentences.each {
     it.trim().split(' ').each { word ->
         word = word.toLowerCase()
         if (word.trim().length() > 0 && !stopWords.contains(word)) {
-            sb.append(word).append(' ')
+            sb.append(word.replaceAll('[-+.^:,"]',"")).append(' ')
         }
     }
+//    println sb.toString()
     prunedSentences << sb.toString()
 }
 
@@ -138,6 +144,17 @@ for (int i = 0; i < prunedSentences.size(); i++) {
 }
 //now create a hashmap by summing all leveinstein values for each statement
 map = [:]
+//matrix.each {
+//    if(it[2]<=0){
+//        return
+//    }
+//    println "******************************************************************"
+//    println prunedSentences.get(it[0])+ "\n" +prunedSentences.get(it[1]) + "\n"+ it[2]
+//    println "\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+//}
+
+
+
 
 matrix.each { it ->
     int sum = 0
@@ -179,3 +196,11 @@ frame.contentPane.add(panel,BorderLayout.CENTER)
 frame.pack()
 frame.setVisible(true)
 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "EXIT"); 
+    frame.getRootPane().getActionMap().put("EXIT", new AbstractAction(){ 
+        public void actionPerformed(ActionEvent e)
+        {
+            System.exit(0)
+        }
+    });
