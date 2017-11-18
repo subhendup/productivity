@@ -2,7 +2,7 @@ import os
 import re
 import datetime
 
-searchdir = os.environ('PWD')
+searchdir = os.environ.get("PWD")
 allfiles = []
 for root, dir,files in os.walk(searchdir):
     for f in files:
@@ -11,4 +11,4 @@ for root, dir,files in os.walk(searchdir):
 
 allfiles.sort(key=lambda x: os.path.getmtime(x))
 for f in allfiles:
-print f,datetime.datetime.fromtimestamp(os.path.getmtime(f))
+    print f,datetime.datetime.fromtimestamp(os.path.getmtime(f))
