@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        class Rectangle {
+            constructor(x,y,width,height,gap) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.gap = gap
+            }
+            
+        }
+
+
+        function foo(canvasX, canvasy){
+            var numOfRects =30;
+            var rectangles = new Array();
+            html = ''
+            var X=0,Y=0,CX=canvasX,CY = canvasy // Radius should be half of cx and cy values at the max
+            width = 150 
+            height = 200
+            gap = Math.max(CX,CY)/10
+            fontsize = 20
+            radius = Math.min(CX,CY) /2;
+            //circular layout with radius = 200
+            degrees = 0
+            loopCount = 0
+            //Find out rects in a circular layout with minimal overlapping
+            while (rectangles.length!=numOfRects ) {
+                
+                xoffset = radius* Math.cos(degrees); 
+                yoffset =  radius*Math.sin(degrees);
+
+                // if (degrees >=0 & degrees <=90){ // 1st quadrant
+                //     X = CX/2 + Math.abs(xoffset); 
+                //     Y = CY/2 - Math.abs(yoffset)
+                // }else if(degrees >=90 & degrees <=180){ // 2nd quadrant clockwise
+                //     X = CX/2 + Math.abs(xoffset); 
+                //     Y = CY/2 + Math.abs(yoffset);
+                // }else if(degrees >=180 & degrees <=270){ // 3nd quadrant clockwise
+                //     X = CX/2 - Math.abs(xoffset); 
+                //     Y = CY/2 + Math.abs(yoffset);
+                // }else if(degrees >=270 & degrees <=360){ // 4nd quadrant clockwise
+                //     X = CX/2 - Math.abs(xoffset); 
+                //     Y = CY/2 - Math.abs(yoffset);
+                // }
+                if (degrees >=0 & degrees <=90){ // 1st quadrant
+                    X = CX/2 + Math.abs(xoffset); 
+                    Y = CY/2 - Math.abs(yoffset)
+                }else if(degrees >=270& degrees <=360){ // 4th quadrant anticlockwise
+                    X = CX/2 + Math.abs(xoffset); 
+                    Y = CY/2 + Math.abs(yoffset);
+                }else if(degrees >=180 & degrees <=270){ // 3rd quadrant anticlockwise
+                    X = CX/2 - Math.abs(xoffset); 
+                    Y = CY/2 + Math.abs(yoffset);
+                }else if(degrees >=90 & degrees <=180){ // 2nd quadrant anticlockwise
+                    X = CX/2 - Math.abs(xoffset); 
+                    Y = CY/2 - Math.abs(yoffset);
+                }
+                console.log(X,Y);
+                notoverlap(new Rectangle(X,Y,height,width,gap),rectangles);
+                degrees++; //increase degree by 1 
+                if(degrees>360){
+                    loopCount++;
+                    //Now 360 degrees are covered , but I cannot allocate. I am expanding the canvas 
+                    console.log('before increase canvas....',rectangles.length,CX,CY)
+                    CX = CX*1.2
+                    CY = CY*1.2
+                    radius = Math.min(CX,CY) /2;
+                    gap = Math.max(CX,CY)/10
+                    rectangles = new Array() // init again ...
+                    degrees =0; //reset degree
+                    console.log('increase canvas....',rectangles.length,CX,CY)
+                }
+            }
+            rectNum = 0
+            console.log('Computing canvas size and creating html ....');
+            rectangles.forEach(element => {
+                rectNum++
+                console.log(element);
+                CX = Math.max(CX,element.x+element.width);
+                CY = Math.max(CY,element.y+element.height);
+                html = html+ 
+                       '\n<g><rect width="'+element.width+'" height="'+element.height+'" style="fill:rgb(255,255,255);stroke-width:3;stroke:rgb(0,0,0)" x="'+element.x +'" y="'+ element.y+'"/>'
+                        + '<text x="'+(element.x+fontsize)+'" y="'+(element.y+fontsize)+'" font-family="Verdana" font-size="'+fontsize+'" fill="blue">'+rectNum+'</text></g>'
+            });
+            
+                
+            
+                
+                    
+            
+            html = connectRectangles(rectangles)+html;
+            html = '<svg width="'+ CX+'" height="'+CY+'">\n'+html + '</svg>';
+            document.getElementById('svg').innerHTML = html;
+        }
+        function connectRectangles(rectangles ){
+            console.log('connecting....with lines...')
+            html2 = ''
+            for (let i = 0; i < rectangles.length; i++) {
+                for (let j = 0; j < rectangles.length; j++) {
+                    if(j>i){
+                        // draw lines 
+                        rect1 = rectangles[i]
+                        rect2 = rectangles[j]
+                        html2 = html2 +'\n<line x1="'+(rect1.x+rect1.width/2)+'" y1="'+(rect1.y+rect1.height/2) +'" x2="'+ (rect2.x+rect2.width/2)+'" y2="'+ (rect2.y+rect2.height/2)+'" style="stroke:'+"#"+((1<<24)*Math.random()|0).toString(16)+';stroke-width:2" />'
+                        
+                    }
+                    
+                }
+                
+                
+            }
+            return html2;
+        }
+
+
+       
+
+        function notoverlap(rect,listofrectangles){
+            var bool = true;
+            for (let index = 0; index < listofrectangles.length; index++) {
+                if (rect.x < listofrectangles[index].x + listofrectangles[index].width && listofrectangles[index].x < rect.x + rect.width && 
+                rect.y < listofrectangles[index].y + listofrectangles[index].height)
+                {
+                    bool = false;
+                    break;
+                    
+                }
+            }
+            if(bool) listofrectangles.push(rect);
+            return bool;
+
+        }
+    </script>
+</head>
+
+<body>
+    <input type="button" value="Click me!" onclick="foo(800,800)">
+    <div id='svg'></div>
+</body>
+
+</html>
